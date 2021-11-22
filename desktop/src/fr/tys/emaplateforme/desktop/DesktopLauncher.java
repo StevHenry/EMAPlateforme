@@ -6,9 +6,11 @@ import fr.tys.emaplateforme.EMAPlateforme;
 
 public class DesktopLauncher {
 
-	public static void main (String[] arg) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new EMAPlateforme(), config);
-
-	}
+    public static void main(String[] arg) {
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        config.title = "EMAPlateforme";
+        config.width = 800;
+        config.height = 300;
+        new LwjglApplication(new EMAPlateforme(), config);
+    }
 }
