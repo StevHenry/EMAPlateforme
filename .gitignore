@@ -45,10 +45,9 @@ nb-configuration.xml
 /local.properties
 .gradle/
 gradle-app.setting
-/build/
-/core/build/
-/desktop/build/
 
 ## OS Specific
 .DS_Store
 Thumbs.db
+
+.floo*
