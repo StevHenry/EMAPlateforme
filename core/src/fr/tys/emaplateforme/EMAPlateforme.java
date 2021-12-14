@@ -1,6 +1,8 @@
 package fr.tys.emaplateforme;
 
 import com.badlogic.gdx.Game;
+import fr.tys.emaplateforme.screen.GameScreen;
+import fr.tys.emaplateforme.util.AssetsManager;
 
 public class EMAPlateforme extends Game {
 
@@ -10,11 +12,19 @@ public class EMAPlateforme extends Game {
     private GameScreen gameScreen;
 
     /**
-     * Called when the screen becomes active
      * Generates a {@link GameScreen} and loads it
      */
+    @Override
     public void create() {
-        this.gameScreen = new GameScreen();
-        setScreen(this.gameScreen);
+        gameScreen = new GameScreen();
+        setScreen(gameScreen);
+    }
+
+    /**
+     * Unloads the game
+     */
+    @Override
+    public void dispose(){
+        AssetsManager.getInstance().unloadTextures();
     }
 }
