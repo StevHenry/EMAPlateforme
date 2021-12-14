@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class DesktopLauncher {
 
-    public static void main(String[] arg) {
+    public static void main(String[] args) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.title = "EMAPlateforme";
         config.foregroundFPS = 120;
@@ -18,4 +18,7 @@ public class DesktopLauncher {
         config.height = (int) (Toolkit.getDefaultToolkit().getScreenSize().getHeight() * ratio);
         new LwjglApplication(new EMAPlateforme(), config);
     }
+
 }
+
+
