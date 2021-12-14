@@ -3,24 +3,24 @@ package fr.tys.emaplateforme.world.blocks;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import fr.tys.emaplateforme.world.BlockTexture;
+import fr.tys.emaplateforme.world.BlockType;
 
 import static fr.tys.emaplateforme.util.Constants.UNIT_BLOCK_SIZE;
 
 public abstract class Block {
 
     /**
-     * Texture of the block
+     * Type of the block
      */
-    protected BlockTexture blockTexture;
+    protected BlockType blockType;
 
     /**
-     * Block location
+     * Block location in the {@link fr.tys.emaplateforme.world.World}
      */
     protected Vector2 position;
 
     /**
-     * Hitbox of the block with a {@link Rectangle}
+     * Hitbox of the block as a {@link Rectangle}
      */
     private Rectangle hitbox;
 
@@ -52,6 +52,6 @@ public abstract class Block {
      * @return the {@link Texture} of the block
      */
     public Texture getTexture() {
-        return this.blockTexture.getTexture();
+        return this.blockType.getTexture();
     }
 }

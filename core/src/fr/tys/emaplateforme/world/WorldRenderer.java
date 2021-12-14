@@ -1,11 +1,11 @@
 package fr.tys.emaplateforme.world;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
-import fr.tys.emaplateforme.EMArio;
 import fr.tys.emaplateforme.world.blocks.Block;
 
 import static fr.tys.emaplateforme.util.Constants.VIEWPORT_HEIGHT;
@@ -19,7 +19,7 @@ public class WorldRenderer {
     private World world;
 
     /**
-     * {@link OrthographicCamera} used to show the world
+     * {@link OrthographicCamera} used to visualize the world
      */
     private OrthographicCamera cam;
 
@@ -29,7 +29,22 @@ public class WorldRenderer {
     private SpriteBatch batch;
 
     /**
-     * Sets the Camera and the SpriteBatch
+     * {@link ShapeRenderer} used to render objects' hitboxes (for debug)
+     */
+    private ShapeRenderer hitboxRenderer;
+
+    /**
+     * DDebug mode activation state
+     */
+    private boolean debugMode = false;
+
+    /**
+     * Texture of EMArio going left
+     */
+    private Sprite flippedEmario;
+
+    /**
+     * Defines the Camera and the SpriteBatch
      *
      * @param world world to use
      */
@@ -37,8 +52,14 @@ public class WorldRenderer {
         this.world = world;
         this.batch = new SpriteBatch();
         this.cam = new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
-        this.cam.position.set(7.5F, 5.0F, 0.0F);
+        this.hitboxRenderer = new ShapeRenderer();
+
+        Character emario = this.world.getCharacter();
+        this.cam.position.set(emario.getPosition().x, emario.getPosition().y, 0);
         this.cam.update();
+
+        flippedEmario = new Sprite(emario.getTexture());
+        flippedEmario.flip(true, false);
     }
 
     /**
@@ -48,36 +69,58 @@ public class WorldRenderer {
         //Background
         ScreenUtils.clear(0.0F, 0.6F, 1.0F, 1.0F);
 
-        this.batch.setProjectionMatrix(this.cam.combined);
-        this.batch.begin();
+        // Batches initialization
+        batch.setProjectionMatrix(cam.combined);
+        batch.begin();
+        if (debugMode) {
+            hitboxRenderer.setProjectionMatrix(cam.combined);
+            hitboxRenderer.setAutoShapeType(true);
+            hitboxRenderer.begin();
+            hitboxRenderer.setColor(1F, 0F, 0F, 1F);
+        }
 
         //Blocks
-        for (Block block : this.world.getBlocks()) {
+        for (Block block : world.getAllBlocks()) {
             Rectangle hitbox = block.getHitbox();
-            float f1 = block.getPosition().x + hitbox.x;
-            float f2 = block.getPosition().y + hitbox.y;
-            this.batch.draw(block.getTexture(), f1, f2, 1.0F, 1.0F);
-            if (block instanceof fr.tys.emaplateforme.world.blocks.Bricks)
-                this.cam.position.x = Math.min(Math.max((block.getPosition()).x, 7.5F), 22.5F);
+            float x = block.getPosition().x + hitbox.x;
+            float y = block.getPosition().y + hitbox.y;
+            batch.draw(block.getTexture(), x, y, 1.0F, 1.0F);
+
+            if (debugMode)
+                this.hitboxRenderer.rect(x, y, hitbox.getWidth(), hitbox.getHeight());
         }
 
         //Character
-        EMArio emario = this.world.getCharacter();
-        Rectangle rect = emario.getHitbox();
-        float x1 = emario.getPosition().x + rect.x;
-        float y1 = emario.getPosition().y + rect.y;
-        this.batch.draw(new Texture("textures/emario.png"), x1, y1, rect.getWidth(), rect.getHeight());
+        Character emario = world.getCharacter();
+        Rectangle hitbox = emario.getHitbox();
+        float characterX = emario.getPosition().x;
+        float characterY = emario.getPosition().y;
+        if (emario.isFacingLeft()) {
+            flippedEmario.setBounds(characterX, characterY, hitbox.getWidth(), hitbox.getHeight());
+            flippedEmario.draw(batch);
+        } else {
+            batch.draw(emario.getTexture(), characterX, characterY, hitbox.getWidth(), hitbox.getHeight());
+        }
 
-        this.batch.end();
-        this.cam.update();
+        // Batches ending
+        batch.end();
+        if (debugMode) {
+            hitboxRenderer.rect(characterX, characterY, hitbox.getWidth(), hitbox.getHeight());
+            hitboxRenderer.end();
+        }
+
+        //Camera update
+        cam.position.set(emario.getPosition().x, emario.getPosition().y + 3, 0);
+        cam.update();
     }
 
-    /**
-     * Disposes the loaded textures on closing
-     * TODO: Create an AssetsManager
-     */
-    public void dispose() {
-        for (BlockTexture blockTexture : BlockTexture.values())
-            blockTexture.getTexture().dispose();
+    public void dispose() {}
+
+    public void enableDebugMode() {
+        debugMode = true;
+    }
+
+    public void disableDebugMode() {
+        debugMode = false;
     }
 }
