@@ -1,26 +1,36 @@
-package fr.tys.emaplateforme;
+package fr.tys.emaplateforme.screen;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import fr.tys.emaplateforme.controller.CharacterMovementController;
 import fr.tys.emaplateforme.world.World;
+import fr.tys.emaplateforme.util.WorldCreator;
 import fr.tys.emaplateforme.world.WorldRenderer;
 
 public class GameScreen implements Screen {
 
+    private World world;
     private WorldRenderer renderer;
+    private CharacterMovementController controller;
 
     /**
      * Method called when the Screen becomes active
      */
     public void show() {
-        this.renderer = new WorldRenderer(new World());
+        world = WorldCreator.loadWorldFromFile("world0.txt");
+        renderer = new WorldRenderer(world);
+        controller = new CharacterMovementController(world);
+        Gdx.input.setInputProcessor(controller);
     }
 
     /**
      * Delegates to the {@link WorldRenderer#render(float)} method
+     *
      * @param delta time between two frames
      */
     public void render(float delta) {
-        this.renderer.render(delta);
+        controller.update(delta);
+        renderer.render(delta);
     }
 
     /**
